@@ -300,4 +300,4 @@ if __name__ == "__main__":
 
 
     plt.subplots_adjust(wspace=0, hspace=0)
-    plt.savefig('./DataGraphs/eta-0.5.png' , bbox_inches='tight')
+    plt.savefig('./DataGraphs/eta-0.5.pdf' , bbox_inches='tight')
