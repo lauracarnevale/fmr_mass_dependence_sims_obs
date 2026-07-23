@@ -161,4 +161,4 @@ if __name__ == "__main__":
     ax.set_ylabel(r'$\eta_{SFR}$')
     ax.set_xlabel(r'$\log (M_*~[M_\odot])$')
 
-    plt.savefig('./DataGraphs/SDSSmetal.png' , bbox_inches='tight')
+    plt.savefig('./DataGraphs/SDSSmetal.pdf' , bbox_inches='tight')
