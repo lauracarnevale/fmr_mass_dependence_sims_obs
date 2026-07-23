@@ -1,3 +1,6 @@
+# Figure 1
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
