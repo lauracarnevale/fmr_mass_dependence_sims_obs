@@ -1,3 +1,5 @@
+# helpers file for Figure 6
+
 import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib as mpl
