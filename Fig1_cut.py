@@ -218,6 +218,6 @@ if __name__ == "__main__":
         
         plt.subplots_adjust(wspace=0, hspace=0)
 
-        plt.savefig('./DataGraphs/cut.png', bbox_inches='tight')
+        plt.savefig('./DataGraphs/cut.pdf', bbox_inches='tight')
 
         
