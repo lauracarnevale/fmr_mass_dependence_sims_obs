@@ -12,6 +12,26 @@ import helpers
 from scipy.stats import binned_statistic
 data_dirs = './Data/'
 
+mpl.rcParams['text.usetex']         = True
+mpl.rcParams['font.family']         = 'serif'
+mpl.rcParams['font.size']           = 18
+mpl.rcParams['axes.linewidth']      = 2
+mpl.rcParams['xtick.direction']     = 'in'
+mpl.rcParams['ytick.direction']     = 'in'
+mpl.rcParams['xtick.minor.visible'] = 'true'
+mpl.rcParams['ytick.minor.visible'] = 'true'
+mpl.rcParams['xtick.major.width']   = 1.5
+mpl.rcParams['ytick.major.width']   = 1.5
+mpl.rcParams['xtick.minor.width']   = 1.0
+mpl.rcParams['ytick.minor.width']   = 1.0
+mpl.rcParams['xtick.major.size']    = 7.5
+mpl.rcParams['ytick.major.size']    = 7.5
+mpl.rcParams['xtick.minor.size']    = 3.5
+mpl.rcParams['ytick.minor.size']    = 3.5
+mpl.rcParams['xtick.top']           = True
+mpl.rcParams['ytick.right']         = True
+
+
 sims = ['ORIGINAL','TNG','SIMBA','EAGLE','SDSS']
 thresholds = [-0.5] 
 
@@ -108,7 +128,7 @@ def line(x, a, b):
         
 if __name__ == "__main__":
     
-    fig = plt.figure(figsize=(8,6))
+    fig = plt.figure(figsize=(12,8))
     ax  = plt.gca()
     
     colors  = ['orange','mediumvioletred','navy','deepskyblue','limegreen']
@@ -118,9 +138,6 @@ if __name__ == "__main__":
    
     dx = [0, 0, 0, 0, 0]
     dy = [0, 0, 0, 0, 0]
-
-    dx1 = [0.01, 0.51, 0.01, 0.51, 0.01]
-    dy1 = [0, 0, -0.45, -0.45, -0.89]
 
     for l, thresh in enumerate(thresholds):
         print(thresh)
@@ -146,36 +163,18 @@ if __name__ == "__main__":
             Hist1 = np.transpose(Hist1) 
             Hist2 = np.transpose(Hist2)
             hist = Hist1/Hist2
-
-            mpl.rcParams['text.usetex']         = True
-            mpl.rcParams['font.family']         = 'serif'
-            mpl.rcParams['font.size']           = 24
-            mpl.rcParams['axes.linewidth']      = 2
-            mpl.rcParams['xtick.direction']     = 'in'
-            mpl.rcParams['ytick.direction']     = 'in'
-            mpl.rcParams['xtick.minor.visible'] = 'true'
-            mpl.rcParams['ytick.minor.visible'] = 'true'
-            mpl.rcParams['xtick.major.width']   = 1.5
-            mpl.rcParams['ytick.major.width']   = 1.5
-            mpl.rcParams['xtick.minor.width']   = 1.0
-            mpl.rcParams['ytick.minor.width']   = 1.0
-            mpl.rcParams['xtick.major.size']    = 7.5
-            mpl.rcParams['ytick.major.size']    = 7.5
-            mpl.rcParams['xtick.minor.size']    = 3.5
-            mpl.rcParams['ytick.minor.size']    = 3.5
-            mpl.rcParams['xtick.top']           = True
-            mpl.rcParams['ytick.right']         = True
-
+            
             text = sim.upper()
             if sim == "ORIGINAL":
-                text = "ILLUSTRIS"
+                text = "Illustris"
 
-            plot = axs[index].pcolormesh(xedges,yedges,hist,cmap=newcmp,vmin=CMIN,vmax=CMAX)
+            plot = axs[index].pcolormesh(xedges,yedges,hist,cmap=newcmp,vmin=CMIN,vmax=CMAX, rasterized=True)
             
-            axs[index].text(0.06+dx[index], 0.07+dy[index], r'{\rm %s}' %text, fontsize = 15, transform=axs[index].transAxes, ha='left')
+            axs[index].text(0.05, 0.95, r'{\rm %s}' %text, fontsize = 15, 
+                            transform=axs[index].transAxes, ha='left', va='top')
 
             if index == 0:
-                ax_cbar = fig.add_axes([0.2, 0.93, 0.6, 0.05])
+                ax_cbar = fig.add_axes([0.2, 0.93, 0.6, 0.02])
                 cb = plt.colorbar(plot, cax=ax_cbar,ticks=np.linspace(CMIN,CMAX,spacing+1) ,shrink=0.5,orientation='horizontal')
                 cb.set_label(r'$\log({\rm sSFR}~[{\rm yr}^{-1}])$')
                 cb.ax.xaxis.set_label_position('top')
@@ -190,7 +189,9 @@ if __name__ == "__main__":
 
 
             if index == 4:
-                axs[4].text(1.0,-1.3,r'$\log(\rm M_{*}~[{\rm M_{\odot}}])$', ha='center', transform=axs[2].transAxes)
+                # axs[4].text(1.0,-1.3,r'$\log(\rm M_{*}~[{\rm M_{\odot}}])$', ha='center', transform=axs[2].transAxes)
+                axs[4].set_xlabel(r'$\log(\rm M_{\star}~[{\rm M_{\odot}}])$')
+                axs[5].set_xlabel(r'$\log(\rm M_{\star}~[{\rm M_{\odot}}])$')
 
             bin_centers = 0.5 * (xedges[1:] + xedges[:-1])
             counts, _, binnumber = binned_statistic(Mstar, Zgas, statistic='count', bins=xedges)
@@ -213,7 +214,7 @@ if __name__ == "__main__":
             xlen = 1.2
             ylen = 1
 
-            ax_inset = axs[index].inset_axes([0.25+dx1[index], 1.01+dy1[index], 0.15, 0.11], transform=ax.transData)
+            ax_inset = axs[index].inset_axes([0.55, 0.175, 0.33, 0.25])
             
             # Make an array to hold the per-galaxy median values (same length as Zgas)
             Zgas_bin_medians = np.full_like(Zgas, np.nan, dtype=float)
@@ -247,7 +248,9 @@ if __name__ == "__main__":
             dxa=[-0.01, 0.49, -0.01, 0.49, -0.01]
             dya=[0.98, 0.98, 0.53, 0.53, 0.095]
 
-            ax_inset.text(0.365+dxa[index], 0.1+dya[index], f"{m:.2f}",transform=ax.transAxes, fontsize=10, color='deeppink')
+            # ax_inset.text(0.365+dxa[index], 0.1+dya[index], f"{m:.2f}",transform=ax.transAxes, fontsize=10, color='deeppink')
+            ax_inset.text(0.5, 1.1, r"$\eta_{\rm SFR}=%0.2f$" %m,transform=ax_inset.transAxes,
+                          fontsize=10, color='deeppink',ha='center')
 
             print(m)
 
@@ -278,21 +281,21 @@ if __name__ == "__main__":
             colors  = ['orangered', 'limegreen', 'dodgerblue', 'orchid', 'black']
             lw      = [1.7,1.7,1.7,1.7,2]
             ls      = ['--','--','--','--','-']
-            a       = [0, 0, 0.4, 0.4, 0.4]
-            b       = [-0.05, -0.16, 0.06, -0.05, -0.16]
+            a       = [0.4, 0.4, 0.4, 0.4, 0.4]
+            b       = [0.28, 0.17, 0.06, -0.05, -0.16]
             
         for i, (sim, x, y) in enumerate(median_lines):
-            label = sim.upper() if sim != "ORIGINAL" else "ILLUSTRIS"
+            label = sim.upper() if sim != "ORIGINAL" else "Illustris"
             ax_summary.plot(x, y, label=label, lw=lw[i], ls=ls[i], color=colors[i])
                
-            ax_summary.text(0.25+a[i], 0.26+b[i] ,r'{\rm %s}' %label, color=colors[i], fontsize = 14, transform=axs[5].transAxes, ha='left')
+            ax_summary.text(0.3+a[i], 0.28+b[i] ,r'{\rm %s}' %label, color=colors[i], fontsize = 14, transform=axs[5].transAxes, ha='left')
 
 
 
             ax_summary.set_xlim(8, 11.8)
             ax_summary.set_ylim(7.2, 9.6)
 
-
+        axs[0].set_xlim(7.9, 13)
 
         
         plt.subplots_adjust(wspace=0, hspace=0)

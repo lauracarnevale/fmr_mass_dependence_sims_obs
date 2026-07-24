@@ -9,6 +9,25 @@ from matplotlib.colors import LogNorm
 
 import helpers_6 as helpers
 
+mpl.rcParams['text.usetex']         = True
+mpl.rcParams['font.family']         = 'serif'
+mpl.rcParams['font.size']           = 18
+mpl.rcParams['axes.linewidth']      = 2
+mpl.rcParams['xtick.direction']     = 'in'
+mpl.rcParams['ytick.direction']     = 'in'
+mpl.rcParams['xtick.minor.visible'] = 'true'
+mpl.rcParams['ytick.minor.visible'] = 'true'
+mpl.rcParams['xtick.major.width']   = 1.5
+mpl.rcParams['ytick.major.width']   = 1.5
+mpl.rcParams['xtick.minor.width']   = 1.0
+mpl.rcParams['ytick.minor.width']   = 1.0
+mpl.rcParams['xtick.major.size']    = 7.5
+mpl.rcParams['ytick.major.size']    = 7.5
+mpl.rcParams['xtick.minor.size']    = 3.5
+mpl.rcParams['ytick.minor.size']    = 3.5
+mpl.rcParams['xtick.top']           = True
+mpl.rcParams['ytick.right']         = True
+
 data_dirs = './Data/'
 
 sims = ['ORIGINAL','TNG','SIMBA','EAGLE','SDSS']
@@ -23,7 +42,7 @@ def get_data(sim, thresh, i, n_bootstrap=1000, plot=False):
             m_star_min = 8.0
             m_star_max = 12.0
 
-            currentDir = data_dirs + 'SDSS/snap0/'
+            currentDir = data_dirs + ''#'SDSS/snap0/'
 
             Zgas      = np.load( currentDir + 'SDSSZgas.npy' )
             star_mass = np.load( currentDir + 'SDSSMstar.npy'  )
@@ -128,7 +147,7 @@ def get_data(sim, thresh, i, n_bootstrap=1000, plot=False):
 
         currentDir = data_dirs + sim + '/' + 'snap%s/' %snap
         if sim == 'SIMBA':
-            currentDir = './Data/SIMBA0/SIMBA_Subfind/snap%s/' %snap
+            currentDir = './Data/SIMBA0/snap%s/' %snap
 
         Zgas      = np.load( currentDir + 'Zgas.npy' )
         star_mass = np.load( currentDir + 'Stellar_Mass.npy'  )
@@ -237,49 +256,35 @@ if __name__ == "__main__":
             print(z)
             for index, sim in enumerate(sims):
                 print(sim)
-                if not (sim == 'SDSS' and i > 0):
+                if not (sim == 'SDSS'):
                     mass, slopes_mid, slopes_low, slopes_high, nums = get_data(sim, thresh, i)
                 
                     yerr_low  = slopes_mid - slopes_low
                     yerr_high = slopes_high - slopes_mid
-        
+
+                    text = sim.upper()
+                    if sim == "ORIGINAL":
+                        text = "Illustris"
+                    
                     axs[i].errorbar(mass+dm[index], slopes_mid, yerr=[yerr_low, yerr_high], 
-                        color=colors[index], ms = 4, marker=markers[index], linestyle='none')
-        
-                text = sim.upper()
-                if sim == "ORIGINAL":
-                    text = "ILLUSTRIS"
+                                    color=colors[index], ms = 4, marker=markers[index], linestyle='none',
+                                    label=text)
 
-            if z==0:
-                for index, each in enumerate(sims):
-                    if each == "ORIGINAL":
-                        each = "ILLUSTRIS"
-                    axs[0].text(0.01+dx[index],1.25+dtext[index],r'${\rm %s}$' %each, fontsize = 14, transform=ax.transAxes, color=colors[index])
+            if i == 1:
+                leg = axs[i].legend(frameon=False,bbox_to_anchor=(0.96,1),labelspacing=0.05,handletextpad=0.25)
+                for iii, text in enumerate(leg.get_texts()):
+                    text.set_color(colors[iii])
 
-            axs[i].text(0.4+dtx[i], 0.3+dty[i], r'${\rm z = %s}$' %z, fontsize = 15, transform=ax.transAxes, color='black')
+            # if z==0:
+            #     for index, each in enumerate(sims):
+            #         if each == "ORIGINAL":
+            #             each = "Illustris"
+            #         axs[0].text(0.01+dx[index],1.25+dtext[index],r'${\rm %s}$' %each, 
+            # fontsize = 14, transform=ax.transAxes, color=colors[index])
 
+            axs[i].text(0.05, 0.925, r'$z=%0.1f$' %z, fontsize = 15, transform=axs[i].transAxes, color='black', va='top')
 
-            mpl.rcParams['text.usetex']         = True
-            mpl.rcParams['font.family']         = 'serif'
-            mpl.rcParams['font.size']           = 24
-            mpl.rcParams['axes.linewidth']      = 2
-            mpl.rcParams['xtick.direction']     = 'in'
-            mpl.rcParams['ytick.direction']     = 'in'
-            mpl.rcParams['xtick.minor.visible'] = 'true'
-            mpl.rcParams['ytick.minor.visible'] = 'true'
-            mpl.rcParams['xtick.major.width']   = 1.5
-            mpl.rcParams['ytick.major.width']   = 1.5
-            mpl.rcParams['xtick.minor.width']   = 1.0
-            mpl.rcParams['ytick.minor.width']   = 1.0
-            mpl.rcParams['xtick.major.size']    = 7.5
-            mpl.rcParams['ytick.major.size']    = 7.5
-            mpl.rcParams['xtick.minor.size']    = 3.5
-            mpl.rcParams['ytick.minor.size']    = 3.5
-            mpl.rcParams['xtick.top']           = True
-            mpl.rcParams['ytick.right']         = True
-
-
-            axs[i].set_xlim(8.0, 11.89)
+            # axs[i].set_xlim(8.0, 11.89)
             axs[0].set_xticks([8,9,10,11])
 
 
@@ -287,11 +292,12 @@ if __name__ == "__main__":
     
             axs[i].set_ylim(-0.6 , 0.6)
 
-    axs[2].set_ylabel(r'$\eta_{SFR}$')
+    axs[2].set_ylabel(r'$\eta_{\rm SFR}$')
     
-    axs[4].text(1.0,-0.3,r'$\log (M_*~[M_\odot])$', ha='center',
-            transform=axs[4].transAxes)
-
+    # axs[4].text(1.0,-0.3,r'$\log (M_*~[M_\odot])$', ha='center',
+    #         transform=axs[4].transAxes)
+    axs[4].set_xlabel(r'$\log (M_\star~[M_\odot])$')
+    axs[5].set_xlabel(r'$\log (M_\star~[M_\odot])$')
 
     plt.subplots_adjust(wspace=0, hspace=0)
     plt.savefig('./DataGraphs/redshift.pdf' , bbox_inches='tight')

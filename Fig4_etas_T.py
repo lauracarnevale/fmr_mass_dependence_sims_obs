@@ -9,6 +9,25 @@ from matplotlib.colors import LogNorm
 
 import helpers
 
+mpl.rcParams['text.usetex']         = True
+mpl.rcParams['font.family']         = 'serif'
+mpl.rcParams['font.size']           = 18
+mpl.rcParams['axes.linewidth']      = 2
+mpl.rcParams['xtick.direction']     = 'in'
+mpl.rcParams['ytick.direction']     = 'in'
+mpl.rcParams['xtick.minor.visible'] = 'true'
+mpl.rcParams['ytick.minor.visible'] = 'true'
+mpl.rcParams['xtick.major.width']   = 1.5
+mpl.rcParams['ytick.major.width']   = 1.5
+mpl.rcParams['xtick.minor.width']   = 1.0
+mpl.rcParams['ytick.minor.width']   = 1.0
+mpl.rcParams['xtick.major.size']    = 7.5
+mpl.rcParams['ytick.major.size']    = 7.5
+mpl.rcParams['xtick.minor.size']    = 3.5
+mpl.rcParams['ytick.minor.size']    = 3.5
+mpl.rcParams['xtick.top']           = True
+mpl.rcParams['ytick.right']         = True
+
 data_dirs = './Data/'
 
 sims = ['ORIGINAL','TNG','SIMBA','EAGLE','SDSS']
@@ -233,8 +252,15 @@ if __name__ == "__main__":
     d2      = ['restrictive)', 'a', 'restrictive)', 'a']
     dtxb    = [-0.01, 0, -0.225, 0]
 
+    desc = [
+        r'$-0.1~{\rm dex}~({\rm more~restrictive})$',
+        r'$-0.5~{\rm dex}~({\rm fiducial})$',
+        r'$-1.0~{\rm dex}~({\rm lenient})$',
+        r'${\rm No~Cut}$'
+    ]
 
-    fig, axs_eta = plt.subplots(2, 2, figsize = (8,5.75), sharex=True, sharey=True)
+
+    fig, axs_eta = plt.subplots(2, 2, figsize = (10,6), sharex=True, sharey=True)
 
     axs = axs_eta.flatten()
 
@@ -246,45 +272,32 @@ if __name__ == "__main__":
                 
             yerr_low  = slopes_mid - slopes_low
             yerr_high = slopes_high - slopes_mid
-        
-            axs[l].errorbar(mass+dm[index], slopes_mid, yerr=[yerr_low, yerr_high], 
-                    color=colors[index], ms = 4, marker=markers[index], linestyle='none')
-        
+
             text = sim.upper()
             if sim == "ORIGINAL":
-                text = "ILLUSTRIS"
+                text = "Illustris"
             
-            d = desc[l]
-            if l in (0, 2):
-                da = d2[l]
+            axs[l].errorbar(mass+dm[index], slopes_mid, yerr=[yerr_low, yerr_high], 
+                            color=colors[index], ms = 6, marker=markers[index], linestyle='none',
+                            label=text)
 
-            if l == 0:
-                axs[0].text(0.05+dx[index],0.925+dtext[index],r'${\rm %s}$' %text, fontsize = 14, transform=ax.transAxes, color=colors[index])
+            if l == 1:
+                leg = axs[l].legend(frameon=False,bbox_to_anchor=(1,1),labelspacing=0.05,handletextpad=0.25)
+                for iii, text in enumerate(leg.get_texts()):
+                    text.set_color(colors[iii])
+            # d = desc[l]
+            # if l in (0, 2):
+            #     da = d2[l]
 
-        axs[l].text(0.4+dtx[l], 0.925+dty[l], r'${\rm T = %s}$' %thresh, fontsize = 15, transform=ax.transAxes, color='black')
-        axs[l].text(0.4+dtxa[l], 0.87+dtya[l], r'${\rm %s}$' %d, fontsize = 15, transform=ax.transAxes, color='black')
-        if l in (0, 2):
-            axs[l].text(0.35+dtxb[l], 0.87+dtya[l], r'${\rm %s}$' %da, fontsize = 15, transform=ax.transAxes, color='black')
+            # if l == 0:
+            #     axs[0].text(0.05+dx[index],0.925+dtext[index],r'${\rm %s}$' %text, fontsize = 14, transform=ax.transAxes, color=colors[index])
 
-
-        mpl.rcParams['text.usetex']         = True
-        mpl.rcParams['font.family']         = 'serif'
-        mpl.rcParams['font.size']           = 24
-        mpl.rcParams['axes.linewidth']      = 2
-        mpl.rcParams['xtick.direction']     = 'in'
-        mpl.rcParams['ytick.direction']     = 'in'
-        mpl.rcParams['xtick.minor.visible'] = 'true'
-        mpl.rcParams['ytick.minor.visible'] = 'true'
-        mpl.rcParams['xtick.major.width']   = 1.5
-        mpl.rcParams['ytick.major.width']   = 1.5
-        mpl.rcParams['xtick.minor.width']   = 1.0
-        mpl.rcParams['ytick.minor.width']   = 1.0
-        mpl.rcParams['xtick.major.size']    = 7.5
-        mpl.rcParams['ytick.major.size']    = 7.5
-        mpl.rcParams['xtick.minor.size']    = 3.5
-        mpl.rcParams['ytick.minor.size']    = 3.5
-        mpl.rcParams['xtick.top']           = True
-        mpl.rcParams['ytick.right']         = True
+        axs[l].text(0.05,0.95,desc[l],transform=axs[l].transAxes,va='top')
+        
+        # axs[l].text(0.4+dtx[l], 0.925+dty[l], r'${\rm %s}$' %thresh, fontsize = 15, transform=ax.transAxes, color='black')
+        # axs[l].text(0.4+dtxa[l], 0.87+dtya[l], r'${\rm %s}$' %d, fontsize = 15, transform=ax.transAxes, color='black')
+        # if l in (0, 2):
+        #     axs[l].text(0.35+dtxb[l], 0.87+dtya[l], r'${\rm %s}$' %da, fontsize = 15, transform=ax.transAxes, color='black')
 
 
         axs[l].set_xlim(8.0, 11.89)
@@ -295,10 +308,13 @@ if __name__ == "__main__":
     
         axs[l].set_ylim(-0.5 , 0.6)
 
-    axs[0].text(-0.3,0,r'$\eta_{SFR}$',
+    axs[0].text(-0.25,0,r'$\eta_{\rm SFR}$',
             ha='center', va='center', rotation=90, transform=axs[0].transAxes)
-    axs[2].text(1.0,-0.3,r'$\log (M_*~[M_\odot])$', ha='center',
-            transform=axs[2].transAxes)
+    # axs[2].text(1.0,-0.3,r'$\log (M_\star~[M_\odot])$', ha='center',
+    #         transform=axs[2].transAxes)
+
+    axs[2].set_xlabel(r'$\log (M_\star~[M_\odot])$')
+    axs[3].set_xlabel(r'$\log (M_\star~[M_\odot])$')
 
 
     plt.subplots_adjust(wspace=0, hspace=0)

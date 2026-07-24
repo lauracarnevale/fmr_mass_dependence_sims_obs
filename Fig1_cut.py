@@ -12,6 +12,25 @@ import helpers
 from scipy.stats import binned_statistic
 data_dirs = './Data/'
 
+mpl.rcParams['text.usetex']         = True
+mpl.rcParams['font.family']         = 'serif'
+mpl.rcParams['font.size']           = 20
+mpl.rcParams['axes.linewidth']      = 2
+mpl.rcParams['xtick.direction']     = 'in'
+mpl.rcParams['ytick.direction']     = 'in'
+mpl.rcParams['xtick.minor.visible'] = 'true'
+mpl.rcParams['ytick.minor.visible'] = 'true'
+mpl.rcParams['xtick.major.width']   = 1.5
+mpl.rcParams['ytick.major.width']   = 1.5
+mpl.rcParams['xtick.minor.width']   = 1.0
+mpl.rcParams['ytick.minor.width']   = 1.0
+mpl.rcParams['xtick.major.size']    = 7.5
+mpl.rcParams['ytick.major.size']    = 7.5
+mpl.rcParams['xtick.minor.size']    = 3.5
+mpl.rcParams['ytick.minor.size']    = 3.5
+mpl.rcParams['xtick.top']           = True
+mpl.rcParams['ytick.right']         = True
+
 sims = ['ORIGINAL','TNG','SIMBA','EAGLE','SDSS']
 thresholds = [-np.inf] 
 
@@ -133,34 +152,15 @@ if __name__ == "__main__":
             print(sim)
             Zgas, Mstar, sSFR = get_data(sim, thresh)
             
-            mpl.rcParams['text.usetex']         = True
-            mpl.rcParams['font.family']         = 'serif'
-            mpl.rcParams['font.size']           = 24
-            mpl.rcParams['axes.linewidth']      = 2
-            mpl.rcParams['xtick.direction']     = 'in'
-            mpl.rcParams['ytick.direction']     = 'in'
-            mpl.rcParams['xtick.minor.visible'] = 'true'
-            mpl.rcParams['ytick.minor.visible'] = 'true'
-            mpl.rcParams['xtick.major.width']   = 1.5
-            mpl.rcParams['ytick.major.width']   = 1.5
-            mpl.rcParams['xtick.minor.width']   = 1.0
-            mpl.rcParams['ytick.minor.width']   = 1.0
-            mpl.rcParams['xtick.major.size']    = 7.5
-            mpl.rcParams['ytick.major.size']    = 7.5
-            mpl.rcParams['xtick.minor.size']    = 3.5
-            mpl.rcParams['ytick.minor.size']    = 3.5
-            mpl.rcParams['xtick.top']           = True
-            mpl.rcParams['ytick.right']         = True
-
             text = sim.upper()
             if sim == "ORIGINAL":
-                text = "ILLUSTRIS"
+                text = "Illustris"
 
-            plot = axs[index].hist2d(Mstar, sSFR, bins=75, norm='log',cmap='Greys')
+            plot = axs[index].hist2d(Mstar, sSFR, bins=75, norm='log',cmap='Greys', rasterized=True)
 
             axs[index].text(0.06+dx[index], 0.07+dy[index], r'{\rm %s}' %text, fontsize = 15, transform=axs[index].transAxes, ha='left')
                  
-            axs[2].set_ylabel(r'$\log(\rm sSFR [yr^{-1}])$')
+            axs[2].set_ylabel(r'$\log(\rm sSFR~[yr^{-1}])$')
             
 
             axs[index].set_xlim(8, 12)
@@ -173,7 +173,9 @@ if __name__ == "__main__":
             axs[index].set_ylim(-12.5, -7.5)
 
             if index == 4:
-                axs[4].text(1.0,-1.3,r'$\log(\rm M_{*}~[{\rm M_{\odot}}])$', ha='center', transform=axs[2].transAxes)
+                # axs[4].text(1.0,-1.3,r'$\log(\rm M_{\star}~[{\rm M_{\odot}}])$', ha='center', transform=axs[2].transAxes)
+                axs[4].set_xlabel(r'$\log(\rm M_{\star}~[{\rm M_{\odot}}])$')
+                axs[3].text(0.5,-0.3,r'$\log(\rm M_{\star}~[{\rm M_{\odot}}])$',transform=axs[3].transAxes,ha='center')
 
             Hist1, xedges, yedges = np.histogram2d(Mstar,sSFR,weights=Zgas,bins=(75,75))
 
@@ -188,16 +190,25 @@ if __name__ == "__main__":
 
             mass_limit_mask = bin_centers <= 10.2
             
-            axs[index].plot(bin_centers[mass_limit_mask], median_ssfr[mass_limit_mask], color='red', linewidth=2)
+            axs[index].plot(bin_centers[mass_limit_mask], median_ssfr[mass_limit_mask], color='red', linewidth=2,
+                            label=r'${\rm sSFMS}$')
 
             cut = median_ssfr - 0.5
 
-            axs[index].plot(bin_centers[mass_limit_mask], cut[mass_limit_mask], color='blue', linewidth=2, ls='--')
+            axs[index].plot(bin_centers[mass_limit_mask], cut[mass_limit_mask], color='blue', linewidth=2, ls='--',
+                            label=r'${\rm sSFMS-0.5~dex}$')
+
+            if index == 4:
+                handles, labels = axs[index].get_legend_handles_labels()
+                leg = axs[5].legend(handles, labels, frameon=False, fontsize=16, loc='lower right')
+                col = ['red','blue']
+                for iii, text in enumerate(leg.get_texts()):
+                    text.set_color(col[iii])
 
             popt, pcov = curve_fit(
-            line,
-            bin_centers[mass_limit_mask],
-            median_ssfr[mass_limit_mask]
+                line,
+                bin_centers[mass_limit_mask],
+                median_ssfr[mass_limit_mask]
             )
 
             # Predict SFMS at higher masses
@@ -213,7 +224,8 @@ if __name__ == "__main__":
             axs[index].plot(high_mass, cut1, color='blue', lw=2, ls='--')
 
 
-        fig.delaxes(axs[5])
+        # fig.delaxes(axs[5])
+        axs[5].axis('off')
 
         
         plt.subplots_adjust(wspace=0, hspace=0)

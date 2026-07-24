@@ -9,6 +9,25 @@ from matplotlib.colors import LogNorm
 
 import helpers
 
+mpl.rcParams['text.usetex']         = True
+mpl.rcParams['font.family']         = 'serif'
+mpl.rcParams['font.size']           = 24
+mpl.rcParams['axes.linewidth']      = 2
+mpl.rcParams['xtick.direction']     = 'in'
+mpl.rcParams['ytick.direction']     = 'in'
+mpl.rcParams['xtick.minor.visible'] = 'true'
+mpl.rcParams['ytick.minor.visible'] = 'true'
+mpl.rcParams['xtick.major.width']   = 1.5
+mpl.rcParams['ytick.major.width']   = 1.5
+mpl.rcParams['xtick.minor.width']   = 1.0
+mpl.rcParams['ytick.minor.width']   = 1.0
+mpl.rcParams['xtick.major.size']    = 7.5
+mpl.rcParams['ytick.major.size']    = 7.5
+mpl.rcParams['xtick.minor.size']    = 3.5
+mpl.rcParams['ytick.minor.size']    = 3.5
+mpl.rcParams['xtick.top']           = True
+mpl.rcParams['ytick.right']         = True
+
 data_dirs = './Data/'
 
 sims = ['C17O3N2', 'M13O3N2', 'PP04O3N2', 'C17N2', 'M13N2', 'PP04N2', 'M91', 'KK04', 'D16']
@@ -19,7 +38,7 @@ def get_data(sim, thresh,  n_bootstrap=1000, plot=False):
     m_star_min = 8.0
     m_star_max = 12.0
 
-    currentDir = data_dirs + 'SDSS0/'
+    currentDir = data_dirs + '/'
 
     Zgas    = np.load( currentDir + 'SDSSZgas_' + sim  + '.npy' )
     star_mass   = np.load( currentDir + 'SDSSMstar.npy'  )
@@ -121,44 +140,28 @@ if __name__ == "__main__":
                 
             yerr_low  = slopes_mid - slopes_low
             yerr_high = slopes_high - slopes_mid
-        
-            ax.errorbar(mass+dm[index], slopes_mid, yerr=[yerr_low, yerr_high], 
-                    color=colors[index], ms = 4, marker=markers[index], linestyle='none')
-        
+
             text = sim.upper()
+            
+            ax.errorbar(mass+dm[index], slopes_mid, yerr=[yerr_low, yerr_high], 
+                        color=colors[index], ms = 8, marker=markers[index],
+                        linestyle='none', label=text)
 
-            ax.text(0.05+dx[index],0.925+dtext[index],r'${\rm %s}$' %text, fontsize = 17, transform=ax.transAxes, color=colors[index])
+            # ax.text(0.05+dx[index],0.925+dtext[index],r'${\rm %s}$' %text, fontsize = 17, transform=ax.transAxes, color=colors[index])
             print(nums)
-
-        mpl.rcParams['text.usetex']         = True
-        mpl.rcParams['font.family']         = 'serif'
-        mpl.rcParams['font.size']           = 24
-        mpl.rcParams['axes.linewidth']      = 2
-        mpl.rcParams['xtick.direction']     = 'in'
-        mpl.rcParams['ytick.direction']     = 'in'
-        mpl.rcParams['xtick.minor.visible'] = 'true'
-        mpl.rcParams['ytick.minor.visible'] = 'true'
-        mpl.rcParams['xtick.major.width']   = 1.5
-        mpl.rcParams['ytick.major.width']   = 1.5
-        mpl.rcParams['xtick.minor.width']   = 1.0
-        mpl.rcParams['ytick.minor.width']   = 1.0
-        mpl.rcParams['xtick.major.size']    = 7.5
-        mpl.rcParams['ytick.major.size']    = 7.5
-        mpl.rcParams['xtick.minor.size']    = 3.5
-        mpl.rcParams['ytick.minor.size']    = 3.5
-        mpl.rcParams['xtick.top']           = True
-        mpl.rcParams['ytick.right']         = True
-
 
         ax.set_xlim(8.0, 11.5)
         ax.set_xticks([8,9,10,11])
 
+        leg = ax.legend(frameon=True,bbox_to_anchor=(0.45, 1.0),loc='upper center',labelspacing=0.05,handletextpad=0.25, fontsize=18)
+        for iii, text in enumerate(leg.get_texts()):
+            text.set_color(colors[iii])
 
         ax.axhline(0.0, color='gray', ls='--', alpha=0.5)
     
-        ax.set_ylim(-0.35 , 0.35)
+        ax.set_ylim(-0.3 , 0.4)
 
-    ax.set_ylabel(r'$\eta_{SFR}$')
-    ax.set_xlabel(r'$\log (M_*~[M_\odot])$')
+    ax.set_ylabel(r'$\eta_{\rm SFR}$')
+    ax.set_xlabel(r'$\log (M_\star~[M_\odot])$')
 
     plt.savefig('./DataGraphs/SDSSmetal.pdf' , bbox_inches='tight')

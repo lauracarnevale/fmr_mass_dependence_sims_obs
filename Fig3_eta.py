@@ -9,6 +9,25 @@ from matplotlib.colors import LogNorm
 
 import helpers
 
+mpl.rcParams['text.usetex']         = True
+mpl.rcParams['font.family']         = 'serif'
+mpl.rcParams['font.size']           = 18
+mpl.rcParams['axes.linewidth']      = 2
+mpl.rcParams['xtick.direction']     = 'in'
+mpl.rcParams['ytick.direction']     = 'in'
+mpl.rcParams['xtick.minor.visible'] = 'true'
+mpl.rcParams['ytick.minor.visible'] = 'true'
+mpl.rcParams['xtick.major.width']   = 1.5
+mpl.rcParams['ytick.major.width']   = 1.5
+mpl.rcParams['xtick.minor.width']   = 1.0
+mpl.rcParams['ytick.minor.width']   = 1.0
+mpl.rcParams['xtick.major.size']    = 7.5
+mpl.rcParams['ytick.major.size']    = 7.5
+mpl.rcParams['xtick.minor.size']    = 3.5
+mpl.rcParams['ytick.minor.size']    = 3.5
+mpl.rcParams['xtick.top']           = True
+mpl.rcParams['ytick.right']         = True
+
 data_dirs = './Data/'
 
 sims = ['ORIGINAL','TNG','SIMBA','EAGLE','SDSS']
@@ -217,7 +236,7 @@ def get_data(sim, thresh,  n_bootstrap=1000, plot=False):
         
 if __name__ == "__main__":
     
-    fig = plt.figure(figsize=(8,6))
+    fig = plt.figure(figsize=(10,4.5))
     ax  = plt.gca()
     
     colors  = ['orange','mediumvioletred','navy','deepskyblue','limegreen']
@@ -229,7 +248,7 @@ if __name__ == "__main__":
     dty     = [0, 0, -0.5, -0.5]
     avg = [-0.17, -0.14, -0.16, -0.26, -0.08]
 
-    fig, ax = plt.subplots(figsize = (11,5.75))
+    # fig, ax = plt.subplots(figsize = (11.5,5.75))
 
 
     for l, thresh in enumerate(thresholds):
@@ -240,63 +259,46 @@ if __name__ == "__main__":
                 
             yerr_low  = slopes_mid - slopes_low
             yerr_high = slopes_high - slopes_mid
-        
-            ax.errorbar(mass+dm[index], slopes_mid, yerr=[yerr_low, yerr_high], 
-                    color=colors[index], ms = 6, marker=markers[index], linestyle='none')
-        
+
             text = sim.upper()
             if sim == "ORIGINAL":
-                text = "ILLUSTRIS"
+                text = "Illustris"
+            
+            ax.errorbar(mass+dm[index], slopes_mid, yerr=[yerr_low, yerr_high], 
+                       color=colors[index], ms = 9, marker=markers[index], linestyle='none',
+                       label=text)
         
-            ax.text(0.03+dx[index],0.9+dtext[index],r'${\rm %s}$' %text, fontsize = 24, transform=ax.transAxes, color=colors[index])
+            # ax.text(0.03+dx[index],0.9+dtext[index],r'${\rm %s}$' %text, fontsize = 24, transform=ax.transAxes, color=colors[index])
 
 
-
-        mpl.rcParams['text.usetex']         = True
-        mpl.rcParams['font.family']         = 'serif'
-        mpl.rcParams['font.size']           = 24
-        mpl.rcParams['axes.linewidth']      = 2
-        mpl.rcParams['xtick.direction']     = 'in'
-        mpl.rcParams['ytick.direction']     = 'in'
-        mpl.rcParams['xtick.minor.visible'] = 'true'
-        mpl.rcParams['ytick.minor.visible'] = 'true'
-        mpl.rcParams['xtick.major.width']   = 1.5
-        mpl.rcParams['ytick.major.width']   = 1.5
-        mpl.rcParams['xtick.minor.width']   = 1.0
-        mpl.rcParams['ytick.minor.width']   = 1.0
-        mpl.rcParams['xtick.major.size']    = 7.5
-        mpl.rcParams['ytick.major.size']    = 7.5
-        mpl.rcParams['xtick.minor.size']    = 3.5
-        mpl.rcParams['ytick.minor.size']    = 3.5
-        mpl.rcParams['xtick.top']           = True
-        mpl.rcParams['ytick.right']         = True
-
-
-        ax.set_xlim(8.0, 11.89)
+        ax.set_xlim(8.0, 11.35)
         ax.set_xticks([8,9,10,11])
 
+        leg = ax.legend(frameon=False,loc='upper left',labelspacing=0.05,handletextpad=0.25)
+        for iii, text in enumerate(leg.get_texts()):
+            text.set_color(colors[iii])
 
         ax.axhline(0.0, color='gray', ls='--', alpha=0.5, lw=3)
 
 
-        ax.axhline(-0.17, color='orange', ls='-.', alpha=0.5)
-        ax.axhline(-0.14, color='mediumvioletred', ls='-.', alpha=0.5)
-        ax.axhline(-0.16, color='navy', ls='-.', alpha=0.5)
-        ax.axhline(-0.26, color='deepskyblue', ls='-.', alpha=0.5)
-        ax.axhline(-0.08, color='limegreen', ls='-.', alpha=0.5)
+        # ax.axhline(-0.17, color='orange', ls='-.', alpha=0.5)
+        # ax.axhline(-0.14, color='mediumvioletred', ls='-.', alpha=0.5)
+        # ax.axhline(-0.16, color='navy', ls='-.', alpha=0.5)
+        # ax.axhline(-0.26, color='deepskyblue', ls='-.', alpha=0.5)
+        # ax.axhline(-0.08, color='limegreen', ls='-.', alpha=0.5)
 
         x = [0.08, -0.08, 0, 0.08, 0.08]
         y = [-0.265, -0.265, -0.265, -0.35, -0.105]
 
-        for each, sim  in enumerate(sims):
-            av = avg[each]
-            ax.text(0.83+x[each], 0.5+y[each],f"{av:.2f}" , fontsize = 21, color=colors[each], transform=ax.transAxes)
+        # for each, sim  in enumerate(sims):
+        #     av = avg[each]
+        #     ax.text(0.83+x[each], 0.5+y[each],f"{av:.2f}" , fontsize = 21, color=colors[each], transform=ax.transAxes)
 
         print(avg)
         ax.set_ylim(-0.5 , 0.6)
 
         ax.set_xlabel(r'$\log(M_\star~[M_\odot])$')
-        ax.set_ylabel(r'$\eta_{SFR}$')
+        ax.set_ylabel(r'$\eta_{\rm SFR}$')
 
 
     plt.subplots_adjust(wspace=0, hspace=0)
